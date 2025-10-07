@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { VehicleCard } from "@/components/VehicleCard";
@@ -11,20 +11,19 @@ import { SlidersHorizontal } from "lucide-react";
 const Search = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
-  const [filteredVehicles, setFilteredVehicles] = useState(vehicles);
   const [sortBy, setSortBy] = useState("relevance");
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
+  // Filter vehicles based on search query
+  const filteredVehicles = useMemo(() => {
     if (query) {
-      const results = searchVehicles(query);
-      setFilteredVehicles(results);
-    } else {
-      setFilteredVehicles(vehicles);
+      return searchVehicles(query);
     }
+    return vehicles;
   }, [query]);
 
-  useEffect(() => {
+  // Sort filtered vehicles
+  const sortedVehicles = useMemo(() => {
     let sorted = [...filteredVehicles];
     if (sortBy === "price-asc") {
       sorted.sort((a, b) => a.price - b.price);
@@ -35,8 +34,8 @@ const Search = () => {
     } else if (sortBy === "mileage-asc") {
       sorted.sort((a, b) => a.mileage - b.mileage);
     }
-    setFilteredVehicles(sorted);
-  }, [sortBy]);
+    return sorted;
+  }, [filteredVehicles, sortBy]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -119,7 +118,8 @@ const Search = () => {
                 <div>
                   <h1 className="text-3xl font-bold mb-2">Resultados da Busca</h1>
                   <p className="text-muted-foreground">
-                    Exibindo 1-{filteredVehicles.length} de {filteredVehicles.length} resultados
+                    Exibindo 1-{sortedVehicles.length} de {sortedVehicles.length} resultados
+                    {query && ` para "${query}"`}
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
@@ -148,15 +148,18 @@ const Search = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredVehicles.map((vehicle) => (
+                {sortedVehicles.map((vehicle) => (
                   <VehicleCard key={vehicle.id} vehicle={vehicle} />
                 ))}
               </div>
 
-              {filteredVehicles.length === 0 && (
+              {sortedVehicles.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-xl text-muted-foreground">
-                    Nenhum veículo encontrado para sua busca.
+                    Nenhum veículo encontrado para "{query}".
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Tente buscar por outras marcas ou modelos.
                   </p>
                 </div>
               )}
