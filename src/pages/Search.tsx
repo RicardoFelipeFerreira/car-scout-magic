@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { VehicleCard } from "@/components/VehicleCard";
-import { vehicles, searchVehicles } from "@/data/vehicles";
+import { vehicles, searchVehicles, brands, extractBrandAndModel } from "@/data/vehicles";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -13,14 +13,62 @@ const Search = () => {
   const query = searchParams.get("q") || "";
   const [sortBy, setSortBy] = useState("relevance");
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Extract brand and model from query
+  const { brand: detectedBrand, model: detectedModel } = useMemo(() => 
+    extractBrandAndModel(query), [query]
+  );
+  
+  const [selectedBrand, setSelectedBrand] = useState<string>("all");
+  const [selectedModel, setSelectedModel] = useState<string>("all");
+  const [selectedPrice, setSelectedPrice] = useState<string>("all");
+  const [selectedLocation, setSelectedLocation] = useState<string>("all");
 
-  // Filter vehicles based on search query
-  const filteredVehicles = useMemo(() => {
-    if (query) {
-      return searchVehicles(query);
+  // Update filters when search query changes
+  useEffect(() => {
+    if (detectedBrand) {
+      setSelectedBrand(detectedBrand);
+      if (detectedModel) {
+        setSelectedModel(detectedModel);
+      } else {
+        setSelectedModel("all");
+      }
     }
-    return vehicles;
-  }, [query]);
+  }, [detectedBrand, detectedModel]);
+
+  // Get available models for selected brand
+  const availableModels = useMemo(() => {
+    if (selectedBrand === "all") return [];
+    const brand = brands.find(b => b.name === selectedBrand);
+    return brand ? brand.models : [];
+  }, [selectedBrand]);
+
+  // Filter vehicles based on search query and filters
+  const filteredVehicles = useMemo(() => {
+    let result = query ? searchVehicles(query) : vehicles;
+    
+    // Apply brand filter
+    if (selectedBrand !== "all") {
+      result = result.filter(v => v.brand === selectedBrand);
+    }
+    
+    // Apply model filter
+    if (selectedModel !== "all") {
+      result = result.filter(v => v.model === selectedModel);
+    }
+    
+    // Apply price filter
+    if (selectedPrice !== "all") {
+      const [min, max] = selectedPrice.split("-").map(Number);
+      if (max) {
+        result = result.filter(v => v.price >= min && v.price <= max);
+      } else {
+        result = result.filter(v => v.price >= min);
+      }
+    }
+    
+    return result;
+  }, [query, selectedBrand, selectedModel, selectedPrice]);
 
   // Sort filtered vehicles
   const sortedVehicles = useMemo(() => {
@@ -36,6 +84,15 @@ const Search = () => {
     }
     return sorted;
   }, [filteredVehicles, sortBy]);
+
+  const handleApplyFilters = () => {
+    setShowFilters(false);
+  };
+
+  const handleBrandChange = (value: string) => {
+    setSelectedBrand(value);
+    setSelectedModel("all"); // Reset model when brand changes
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -53,60 +110,78 @@ const Search = () => {
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="brand">Marca</Label>
-                      <Select>
+                      <Select value={selectedBrand} onValueChange={handleBrandChange}>
                         <SelectTrigger id="brand">
                           <SelectValue placeholder="Qualquer" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Qualquer</SelectItem>
-                          <SelectItem value="toyota">Toyota</SelectItem>
-                          <SelectItem value="honda">Honda</SelectItem>
-                          <SelectItem value="ford">Ford</SelectItem>
+                          {brands.map((brand) => (
+                            <SelectItem key={brand.name} value={brand.name}>
+                              {brand.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div>
                       <Label htmlFor="model">Modelo</Label>
-                      <Select>
+                      <Select 
+                        value={selectedModel} 
+                        onValueChange={setSelectedModel}
+                        disabled={selectedBrand === "all"}
+                      >
                         <SelectTrigger id="model">
                           <SelectValue placeholder="Qualquer" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Qualquer</SelectItem>
+                          {availableModels.map((model) => (
+                            <SelectItem key={model} value={model}>
+                              {model}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div>
                       <Label htmlFor="price">Preço</Label>
-                      <Select>
+                      <Select value={selectedPrice} onValueChange={setSelectedPrice}>
                         <SelectTrigger id="price">
                           <SelectValue placeholder="Qualquer" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Qualquer</SelectItem>
-                          <SelectItem value="0-50000">Até R$ 50.000</SelectItem>
-                          <SelectItem value="50000-100000">R$ 50.000 - R$ 100.000</SelectItem>
+                          <SelectItem value="0-70000">Até R$ 70.000</SelectItem>
+                          <SelectItem value="70000-100000">R$ 70.000 - R$ 100.000</SelectItem>
                           <SelectItem value="100000-150000">R$ 100.000 - R$ 150.000</SelectItem>
-                          <SelectItem value="150000+">Acima de R$ 150.000</SelectItem>
+                          <SelectItem value="150000-200000">R$ 150.000 - R$ 200.000</SelectItem>
+                          <SelectItem value="200000-999999">Acima de R$ 200.000</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div>
                       <Label htmlFor="location">Localização</Label>
-                      <Select>
+                      <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                         <SelectTrigger id="location">
                           <SelectValue placeholder="Qualquer" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Qualquer</SelectItem>
+                          <SelectItem value="sp">São Paulo</SelectItem>
+                          <SelectItem value="rj">Rio de Janeiro</SelectItem>
+                          <SelectItem value="mg">Minas Gerais</SelectItem>
+                          <SelectItem value="rs">Rio Grande do Sul</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
-                    <Button className="w-full">Aplicar Filtros</Button>
+                    <Button className="w-full" onClick={handleApplyFilters}>
+                      Aplicar Filtros
+                    </Button>
                   </div>
                 </div>
               </div>
