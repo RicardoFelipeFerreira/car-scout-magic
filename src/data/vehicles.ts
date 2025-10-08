@@ -19,14 +19,10 @@ export interface Brand {
   name: string;
   logo: string;
   models: string[];
-  code?: string;
 }
 
-export interface FIPEBrand {
-  name: string;
-  code: string;
-  models: string[];
-}
+// Importar dados das marcas do JSON local
+import brandsData from './brands.json';
 
 // Logos das marcas (fallback)
 const brandLogos: { [key: string]: string } = {
@@ -47,89 +43,12 @@ const brandLogos: { [key: string]: string } = {
   "Mitsubishi": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Mitsubishi_logo.svg/200px-Mitsubishi_logo.svg.png",
 };
 
-// Função para buscar marcas e modelos da FIPE
-let cachedBrands: Brand[] | null = null;
-
-export const fetchFIPEBrands = async (): Promise<Brand[]> => {
-  // Retornar cache se existir
-  if (cachedBrands && cachedBrands.length > 0) {
-    return cachedBrands;
-  }
-
-  try {
-    const response = await fetch(
-      `https://wxbcjlmtnnmrfctxteyv.supabase.co/functions/v1/fipe-proxy?action=brands`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Erro ao buscar marcas da FIPE');
-    }
-
-    const fipeBrands: FIPEBrand[] = await response.json();
-    
-    // Mapear para o formato Brand com logos
-    cachedBrands = fipeBrands.map(brand => ({
-      name: brand.name,
-      code: brand.code,
-      models: brand.models,
-      logo: brandLogos[brand.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=random`
-    }));
-
-    return cachedBrands;
-  } catch (error) {
-    console.error('Erro ao buscar marcas da FIPE:', error);
-    // Retornar marcas padrão em caso de erro
-    return getDefaultBrands();
-  }
-};
-
-// Marcas padrão (fallback)
-const getDefaultBrands = (): Brand[] => [
-  {
-    name: "Fiat",
-    logo: brandLogos["Fiat"],
-    models: ["Argo", "Mobi", "Toro", "Strada", "Pulse", "Fastback", "Cronos", "Uno"]
-  },
-  {
-    name: "VW - VolksWagen",
-    logo: brandLogos["VW - VolksWagen"],
-    models: ["Polo", "Gol", "Virtus", "T-Cross", "Tiguan", "Nivus", "Saveiro", "Amarok"]
-  },
-  {
-    name: "GM - Chevrolet",
-    logo: brandLogos["GM - Chevrolet"],
-    models: ["Onix", "Tracker", "S10", "Cruze", "Spin", "Montana", "Equinox"]
-  },
-  {
-    name: "Toyota",
-    logo: brandLogos["Toyota"],
-    models: ["Corolla", "Hilux", "RAV4", "Camry", "Yaris", "Corolla Cross", "SW4"]
-  },
-  {
-    name: "Hyundai",
-    logo: brandLogos["Hyundai"],
-    models: ["HB20", "Creta", "Tucson", "ix35", "Elantra", "HB20S", "Azera"]
-  },
-  {
-    name: "Honda",
-    logo: brandLogos["Honda"],
-    models: ["Civic", "HR-V", "City", "Fit", "Accord", "WR-V", "CR-V"]
-  }
-];
-
-export let brands: Brand[] = getDefaultBrands();
-
-// Inicializar marcas da FIPE
-fetchFIPEBrands().then(fipeBrands => {
-  if (fipeBrands.length > 0) {
-    brands = fipeBrands;
-  }
-});
+// Carregar marcas do JSON e adicionar logos
+export const brands: Brand[] = brandsData.map(brand => ({
+  name: brand.name,
+  models: brand.models,
+  logo: brandLogos[brand.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=random`
+}));
 
 export const vehicles: Vehicle[] = [
   // Featured vehicles
