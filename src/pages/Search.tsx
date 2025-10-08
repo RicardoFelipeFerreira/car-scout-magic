@@ -6,7 +6,10 @@ import { vehicles, searchVehicles, brands, extractBrandAndModel } from "@/data/v
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { SlidersHorizontal, ChevronDown } from "lucide-react";
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -21,8 +24,23 @@ const Search = () => {
   
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
   const [selectedModel, setSelectedModel] = useState<string>("all");
-  const [selectedPrice, setSelectedPrice] = useState<string>("all");
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
+  
+  // Range filters
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
+  const [yearRange, setYearRange] = useState<[number, number]>([1940, 2026]);
+  const [kmRange, setKmRange] = useState<[number, number]>([0, 200000]);
+  
+  // Advanced filters
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [selectedTransmission, setSelectedTransmission] = useState<string>("all");
+  const [selectedFuel, setSelectedFuel] = useState<string>("all");
+  const [selectedPlateEnd, setSelectedPlateEnd] = useState<string>("all");
+  const [selectedColor, setSelectedColor] = useState<string>("all");
+  const [selectedBodyType, setSelectedBodyType] = useState<string>("all");
+  const [selectedDoors, setSelectedDoors] = useState<string>("all");
+  const [selectedArmored, setSelectedArmored] = useState<string>("all");
+  const [selectedAuction, setSelectedAuction] = useState<string>("all");
 
   // Update filters when search query changes
   useEffect(() => {
@@ -57,18 +75,30 @@ const Search = () => {
       result = result.filter(v => v.model === selectedModel);
     }
     
-    // Apply price filter
-    if (selectedPrice !== "all") {
-      const [min, max] = selectedPrice.split("-").map(Number);
-      if (max) {
-        result = result.filter(v => v.price >= min && v.price <= max);
-      } else {
-        result = result.filter(v => v.price >= min);
-      }
+    // Apply price range filter
+    result = result.filter(v => v.price >= priceRange[0] && v.price <= priceRange[1]);
+    
+    // Apply year range filter
+    result = result.filter(v => v.year >= yearRange[0] && v.year <= yearRange[1]);
+    
+    // Apply km range filter
+    result = result.filter(v => v.mileage >= kmRange[0] && v.mileage <= kmRange[1]);
+    
+    // Apply advanced filters
+    if (selectedTransmission !== "all") {
+      result = result.filter(v => v.transmission === selectedTransmission);
+    }
+    
+    if (selectedFuel !== "all") {
+      result = result.filter(v => v.fuel === selectedFuel);
+    }
+    
+    if (selectedColor !== "all") {
+      result = result.filter(v => v.color === selectedColor);
     }
     
     return result;
-  }, [query, selectedBrand, selectedModel, selectedPrice]);
+  }, [query, selectedBrand, selectedModel, priceRange, yearRange, kmRange, selectedTransmission, selectedFuel, selectedColor]);
 
   // Sort filtered vehicles
   const sortedVehicles = useMemo(() => {
@@ -107,7 +137,23 @@ const Search = () => {
                 <div>
                   <h3 className="text-lg font-bold mb-4">Filtros</h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-6">
+                    <div>
+                      <Label htmlFor="location">Localização</Label>
+                      <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                        <SelectTrigger id="location">
+                          <SelectValue placeholder="Qualquer" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Qualquer</SelectItem>
+                          <SelectItem value="sp">São Paulo</SelectItem>
+                          <SelectItem value="rj">Rio de Janeiro</SelectItem>
+                          <SelectItem value="mg">Minas Gerais</SelectItem>
+                          <SelectItem value="rs">Rio Grande do Sul</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     <div>
                       <Label htmlFor="brand">Marca</Label>
                       <Select value={selectedBrand} onValueChange={handleBrandChange}>
@@ -147,37 +193,256 @@ const Search = () => {
                     </div>
 
                     <div>
-                      <Label htmlFor="price">Preço</Label>
-                      <Select value={selectedPrice} onValueChange={setSelectedPrice}>
-                        <SelectTrigger id="price">
-                          <SelectValue placeholder="Qualquer" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Qualquer</SelectItem>
-                          <SelectItem value="0-70000">Até R$ 70.000</SelectItem>
-                          <SelectItem value="70000-100000">R$ 70.000 - R$ 100.000</SelectItem>
-                          <SelectItem value="100000-150000">R$ 100.000 - R$ 150.000</SelectItem>
-                          <SelectItem value="150000-200000">R$ 150.000 - R$ 200.000</SelectItem>
-                          <SelectItem value="200000-999999">Acima de R$ 200.000</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>Preço</Label>
+                      <div className="space-y-3 mt-2">
+                        <Slider
+                          min={0}
+                          max={500000}
+                          step={5000}
+                          value={priceRange}
+                          onValueChange={(value) => setPriceRange(value as [number, number])}
+                          className="w-full"
+                        />
+                        <div className="flex gap-2">
+                          <div className="flex-1">
+                            <Label className="text-xs">Min</Label>
+                            <Input
+                              type="number"
+                              value={priceRange[0]}
+                              onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                              placeholder="Mínimo"
+                              className="h-8"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Label className="text-xs">Max</Label>
+                            <Input
+                              type="number"
+                              value={priceRange[1]}
+                              onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                              placeholder="Máximo"
+                              className="h-8"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div>
-                      <Label htmlFor="location">Localização</Label>
-                      <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                        <SelectTrigger id="location">
-                          <SelectValue placeholder="Qualquer" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Qualquer</SelectItem>
-                          <SelectItem value="sp">São Paulo</SelectItem>
-                          <SelectItem value="rj">Rio de Janeiro</SelectItem>
-                          <SelectItem value="mg">Minas Gerais</SelectItem>
-                          <SelectItem value="rs">Rio Grande do Sul</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>Ano</Label>
+                      <div className="space-y-3 mt-2">
+                        <Slider
+                          min={1940}
+                          max={2026}
+                          step={1}
+                          value={yearRange}
+                          onValueChange={(value) => setYearRange(value as [number, number])}
+                          className="w-full"
+                        />
+                        <div className="flex gap-2">
+                          <div className="flex-1">
+                            <Label className="text-xs">Min</Label>
+                            <Input
+                              type="number"
+                              value={yearRange[0]}
+                              onChange={(e) => setYearRange([Number(e.target.value), yearRange[1]])}
+                              placeholder="Mínimo"
+                              className="h-8"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Label className="text-xs">Max</Label>
+                            <Input
+                              type="number"
+                              value={yearRange[1]}
+                              onChange={(e) => setYearRange([yearRange[0], Number(e.target.value)])}
+                              placeholder="Máximo"
+                              className="h-8"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
+
+                    <div>
+                      <Label>KM</Label>
+                      <div className="space-y-3 mt-2">
+                        <Slider
+                          min={0}
+                          max={200000}
+                          step={5000}
+                          value={kmRange}
+                          onValueChange={(value) => setKmRange(value as [number, number])}
+                          className="w-full"
+                        />
+                        <div className="flex gap-2">
+                          <div className="flex-1">
+                            <Label className="text-xs">Min</Label>
+                            <Input
+                              type="number"
+                              value={kmRange[0]}
+                              onChange={(e) => setKmRange([Number(e.target.value), kmRange[1]])}
+                              placeholder="0 km"
+                              className="h-8"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Label className="text-xs">Max</Label>
+                            <Input
+                              type="number"
+                              value={kmRange[1]}
+                              onChange={(e) => setKmRange([kmRange[0], Number(e.target.value)])}
+                              placeholder="200.000 km"
+                              className="h-8"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Collapsible open={showAdvancedFilters} onOpenChange={setShowAdvancedFilters}>
+                      <CollapsibleTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          Filtros Avançados
+                          <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} />
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="space-y-4 mt-4">
+                        <div>
+                          <Label htmlFor="transmission">Câmbio</Label>
+                          <Select value={selectedTransmission} onValueChange={setSelectedTransmission}>
+                            <SelectTrigger id="transmission">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              <SelectItem value="Manual">Manual</SelectItem>
+                              <SelectItem value="Automático">Automático</SelectItem>
+                              <SelectItem value="Automatizado">Automatizado</SelectItem>
+                              <SelectItem value="CVT">CVT</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="fuel">Combustível</Label>
+                          <Select value={selectedFuel} onValueChange={setSelectedFuel}>
+                            <SelectTrigger id="fuel">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              <SelectItem value="Gasolina">Gasolina</SelectItem>
+                              <SelectItem value="Álcool">Álcool</SelectItem>
+                              <SelectItem value="Flex">Flex</SelectItem>
+                              <SelectItem value="Diesel">Diesel</SelectItem>
+                              <SelectItem value="GNV">GNV</SelectItem>
+                              <SelectItem value="Elétrico">Elétrico</SelectItem>
+                              <SelectItem value="Híbrido">Híbrido</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="plateEnd">Final da Placa</Label>
+                          <Select value={selectedPlateEnd} onValueChange={setSelectedPlateEnd}>
+                            <SelectTrigger id="plateEnd">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                                <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="color">Cor</Label>
+                          <Select value={selectedColor} onValueChange={setSelectedColor}>
+                            <SelectTrigger id="color">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              <SelectItem value="Branco">Branco</SelectItem>
+                              <SelectItem value="Preto">Preto</SelectItem>
+                              <SelectItem value="Prata">Prata</SelectItem>
+                              <SelectItem value="Cinza">Cinza</SelectItem>
+                              <SelectItem value="Vermelho">Vermelho</SelectItem>
+                              <SelectItem value="Azul">Azul</SelectItem>
+                              <SelectItem value="Verde">Verde</SelectItem>
+                              <SelectItem value="Amarelo">Amarelo</SelectItem>
+                              <SelectItem value="Laranja">Laranja</SelectItem>
+                              <SelectItem value="Marrom">Marrom</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="bodyType">Carroceria</Label>
+                          <Select value={selectedBodyType} onValueChange={setSelectedBodyType}>
+                            <SelectTrigger id="bodyType">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              <SelectItem value="Sedan">Sedan</SelectItem>
+                              <SelectItem value="Hatch">Hatch</SelectItem>
+                              <SelectItem value="SUV">SUV</SelectItem>
+                              <SelectItem value="Picape">Picape</SelectItem>
+                              <SelectItem value="Conversível">Conversível</SelectItem>
+                              <SelectItem value="Minivan">Minivan</SelectItem>
+                              <SelectItem value="Cupê">Cupê</SelectItem>
+                              <SelectItem value="Perua/SW">Perua/SW</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="doors">Portas</Label>
+                          <Select value={selectedDoors} onValueChange={setSelectedDoors}>
+                            <SelectTrigger id="doors">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              <SelectItem value="2">2 portas</SelectItem>
+                              <SelectItem value="4">4 portas</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="armored">Blindagem</Label>
+                          <Select value={selectedArmored} onValueChange={setSelectedArmored}>
+                            <SelectTrigger id="armored">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              <SelectItem value="yes">Blindado</SelectItem>
+                              <SelectItem value="no">Não blindado</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="auction">Leilão</Label>
+                          <Select value={selectedAuction} onValueChange={setSelectedAuction}>
+                            <SelectTrigger id="auction">
+                              <SelectValue placeholder="Qualquer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Qualquer</SelectItem>
+                              <SelectItem value="yes">De leilão</SelectItem>
+                              <SelectItem value="no">Não é de leilão</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
 
                     <Button className="w-full" onClick={handleApplyFilters}>
                       Aplicar Filtros
