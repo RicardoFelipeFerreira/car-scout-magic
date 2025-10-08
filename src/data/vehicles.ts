@@ -440,13 +440,17 @@ export const vehicles: Vehicle[] = [
 ];
 
 export const searchVehicles = (query: string): Vehicle[] => {
-  const lowerQuery = query.toLowerCase();
-  return vehicles.filter(
-    (v) =>
-      v.brand.toLowerCase().includes(lowerQuery) ||
-      v.model.toLowerCase().includes(lowerQuery) ||
-      `${v.brand} ${v.model}`.toLowerCase().includes(lowerQuery)
-  );
+  const lowerQuery = query.toLowerCase().trim();
+  
+  // Split query into words for flexible search
+  const queryWords = lowerQuery.split(/\s+/);
+  
+  return vehicles.filter((v) => {
+    const vehicleText = `${v.brand} ${v.model} ${v.year}`.toLowerCase();
+    
+    // Check if all query words are present in the vehicle text
+    return queryWords.every(word => vehicleText.includes(word));
+  });
 };
 
 export const getSuggestions = (query: string): Array<{ brand: Brand; model: string }> => {
@@ -464,7 +468,8 @@ export const getSuggestions = (query: string): Array<{ brand: Brand; model: stri
     });
   });
   
-  return suggestions.slice(0, 5);
+  // Return all suggestions, not just first 5
+  return suggestions;
 };
 
 export const extractBrandAndModel = (query: string): { brand: string | null; model: string | null } => {

@@ -76,7 +76,7 @@ export const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
       </form>
 
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50">
+        <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50 max-h-[300px] overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <button
               key={index}
