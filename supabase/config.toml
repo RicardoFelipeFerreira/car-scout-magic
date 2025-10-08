@@ -1,0 +1,4 @@
+project_id = "wxbcjlmtnnmrfctxteyv"
+
+[functions.fipe-proxy]
+verify_jwt = false

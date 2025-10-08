@@ -19,85 +19,117 @@ export interface Brand {
   name: string;
   logo: string;
   models: string[];
+  code?: string;
 }
 
-export const brands: Brand[] = [
+export interface FIPEBrand {
+  name: string;
+  code: string;
+  models: string[];
+}
+
+// Logos das marcas (fallback)
+const brandLogos: { [key: string]: string } = {
+  "Fiat": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Fiat_Automobiles_logo_2006.svg/200px-Fiat_Automobiles_logo_2006.svg.png",
+  "VW - VolksWagen": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/200px-Volkswagen_logo_2019.svg.png",
+  "GM - Chevrolet": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Chevrolet_logo.svg/200px-Chevrolet_logo.svg.png",
+  "Toyota": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Toyota_EU.svg/200px-Toyota_EU.svg.png",
+  "Hyundai": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Hyundai_logo_%282011%29.svg/200px-Hyundai_logo_%282011%29.svg.png",
+  "Honda": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Honda_logo.svg/200px-Honda_logo.svg.png",
+  "Jeep": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Jeep_logo.svg/200px-Jeep_logo.svg.png",
+  "Nissan": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/200px-Nissan_logo.svg.png",
+  "Renault": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Renault_2015.svg/200px-Renault_2015.svg.png",
+  "Peugeot": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Peugeot_2021.svg/200px-Peugeot_2021.svg.png",
+  "Citroën": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Citro%C3%ABn_2022.svg/200px-Citro%C3%ABn_2022.svg.png",
+  "Ford": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Ford_Motor_Company_Logo_2017.svg/200px-Ford_Motor_Company_Logo_2017.svg.png",
+  "BYD": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/BYD_company_logo.svg/200px-BYD_company_logo.svg.png",
+  "CAOA CHERY": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chery_Logo.svg/200px-Chery_Logo.svg.png",
+  "Mitsubishi": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Mitsubishi_logo.svg/200px-Mitsubishi_logo.svg.png",
+};
+
+// Função para buscar marcas e modelos da FIPE
+let cachedBrands: Brand[] | null = null;
+
+export const fetchFIPEBrands = async (): Promise<Brand[]> => {
+  // Retornar cache se existir
+  if (cachedBrands && cachedBrands.length > 0) {
+    return cachedBrands;
+  }
+
+  try {
+    const response = await fetch(
+      `https://wxbcjlmtnnmrfctxteyv.supabase.co/functions/v1/fipe-proxy?action=brands`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar marcas da FIPE');
+    }
+
+    const fipeBrands: FIPEBrand[] = await response.json();
+    
+    // Mapear para o formato Brand com logos
+    cachedBrands = fipeBrands.map(brand => ({
+      name: brand.name,
+      code: brand.code,
+      models: brand.models,
+      logo: brandLogos[brand.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=random`
+    }));
+
+    return cachedBrands;
+  } catch (error) {
+    console.error('Erro ao buscar marcas da FIPE:', error);
+    // Retornar marcas padrão em caso de erro
+    return getDefaultBrands();
+  }
+};
+
+// Marcas padrão (fallback)
+const getDefaultBrands = (): Brand[] => [
   {
     name: "Fiat",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Fiat_Automobiles_logo_2006.svg/200px-Fiat_Automobiles_logo_2006.svg.png",
+    logo: brandLogos["Fiat"],
     models: ["Argo", "Mobi", "Toro", "Strada", "Pulse", "Fastback", "Cronos", "Uno"]
   },
   {
-    name: "Volkswagen",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/200px-Volkswagen_logo_2019.svg.png",
+    name: "VW - VolksWagen",
+    logo: brandLogos["VW - VolksWagen"],
     models: ["Polo", "Gol", "Virtus", "T-Cross", "Tiguan", "Nivus", "Saveiro", "Amarok"]
   },
   {
-    name: "Chevrolet",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Chevrolet_logo.svg/200px-Chevrolet_logo.svg.png",
+    name: "GM - Chevrolet",
+    logo: brandLogos["GM - Chevrolet"],
     models: ["Onix", "Tracker", "S10", "Cruze", "Spin", "Montana", "Equinox"]
   },
   {
     name: "Toyota",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Toyota_EU.svg/200px-Toyota_EU.svg.png",
+    logo: brandLogos["Toyota"],
     models: ["Corolla", "Hilux", "RAV4", "Camry", "Yaris", "Corolla Cross", "SW4"]
   },
   {
     name: "Hyundai",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Hyundai_logo_%282011%29.svg/200px-Hyundai_logo_%282011%29.svg.png",
+    logo: brandLogos["Hyundai"],
     models: ["HB20", "Creta", "Tucson", "ix35", "Elantra", "HB20S", "Azera"]
   },
   {
     name: "Honda",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Honda_logo.svg/200px-Honda_logo.svg.png",
+    logo: brandLogos["Honda"],
     models: ["Civic", "HR-V", "City", "Fit", "Accord", "WR-V", "CR-V"]
-  },
-  {
-    name: "Jeep",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Jeep_logo.svg/200px-Jeep_logo.svg.png",
-    models: ["Compass", "Renegade", "Commander", "Wrangler", "Grand Cherokee"]
-  },
-  {
-    name: "Nissan",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/200px-Nissan_logo.svg.png",
-    models: ["Kicks", "Versa", "Sentra", "Frontier", "Leaf"]
-  },
-  {
-    name: "Renault",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Renault_2015.svg/200px-Renault_2015.svg.png",
-    models: ["Kwid", "Sandero", "Duster", "Oroch", "Captur", "Kardian"]
-  },
-  {
-    name: "Peugeot",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Peugeot_2021.svg/200px-Peugeot_2021.svg.png",
-    models: ["208", "2008", "3008", "5008", "Partner"]
-  },
-  {
-    name: "Citroën",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Citro%C3%ABn_2022.svg/200px-Citro%C3%ABn_2022.svg.png",
-    models: ["C3", "C4 Cactus", "Aircross", "Berlingo"]
-  },
-  {
-    name: "Ford",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Ford_Motor_Company_Logo_2017.svg/200px-Ford_Motor_Company_Logo_2017.svg.png",
-    models: ["Ranger", "Territory", "Bronco Sport", "Maverick"]
-  },
-  {
-    name: "BYD",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/BYD_company_logo.svg/200px-BYD_company_logo.svg.png",
-    models: ["Dolphin", "Song Plus", "Yuan Plus", "Tan", "Seal"]
-  },
-  {
-    name: "Caoa Chery",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chery_Logo.svg/200px-Chery_Logo.svg.png",
-    models: ["Tiggo 5X", "Tiggo 7", "Tiggo 8", "Arrizo 6"]
-  },
-  {
-    name: "Mitsubishi",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Mitsubishi_logo.svg/200px-Mitsubishi_logo.svg.png",
-    models: ["L200", "Eclipse Cross", "Outlander", "ASX"]
   }
 ];
+
+export let brands: Brand[] = getDefaultBrands();
+
+// Inicializar marcas da FIPE
+fetchFIPEBrands().then(fipeBrands => {
+  if (fipeBrands.length > 0) {
+    brands = fipeBrands;
+  }
+});
 
 export const vehicles: Vehicle[] = [
   // Featured vehicles
