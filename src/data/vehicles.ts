@@ -13,6 +13,9 @@ export interface Vehicle {
   description: string;
   image: string;
   features?: string[];
+  location: string;
+  store: string;
+  externalUrl?: string;
 }
 
 export interface Brand {
@@ -66,7 +69,10 @@ export const vehicles: Vehicle[] = [
     featured: true,
     description: "Picape mais vendida do Brasil, baixíssima quilometragem.",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&auto=format&fit=crop",
-    features: ["Ar-condicionado", "Direção elétrica", "Vidros elétricos", "Alarme"]
+    features: ["Ar-condicionado", "Direção elétrica", "Vidros elétricos", "Alarme"],
+    location: "Rio Grande do Sul",
+    store: "Auto Center Premium",
+    externalUrl: "https://google.com"
   },
   {
     id: "2",
@@ -82,7 +88,10 @@ export const vehicles: Vehicle[] = [
     featured: true,
     description: "Seminovo, econômico e confortável.",
     image: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&auto=format&fit=crop",
-    features: ["Central multimídia", "Ar digital", "Sensor de estacionamento", "Controle de tração"]
+    features: ["Central multimídia", "Ar digital", "Sensor de estacionamento", "Controle de tração"],
+    location: "São Paulo",
+    store: "VW São Paulo",
+    externalUrl: "https://google.com"
   },
   {
     id: "3",
@@ -98,7 +107,10 @@ export const vehicles: Vehicle[] = [
     featured: true,
     description: "Sedan premium, manutenção em dia.",
     image: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&auto=format&fit=crop",
-    features: ["Bancos de couro", "Teto solar", "Piloto automático", "Sistema multimídia"]
+    features: ["Bancos de couro", "Teto solar", "Piloto automático", "Sistema multimídia"],
+    location: "Minas Gerais",
+    store: "Toyota Belo Horizonte",
+    externalUrl: "https://google.com"
   },
   {
     id: "4",
@@ -114,7 +126,10 @@ export const vehicles: Vehicle[] = [
     featured: true,
     description: "SUV completo, interior espaçoso.",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&auto=format&fit=crop",
-    features: ["4x4", "Teto solar", "Bancos de couro", "Sensor de estacionamento"]
+    features: ["4x4", "Teto solar", "Bancos de couro", "Sensor de estacionamento"],
+    location: "Rio de Janeiro",
+    store: "Jeep Rio",
+    externalUrl: "https://google.com"
   },
   // More vehicles
   {
@@ -131,7 +146,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Hatch moderno, ótimo custo-benefício.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["Ar-condicionado", "Vidros elétricos", "Central multimídia", "Direção elétrica"]
+    features: ["Ar-condicionado", "Vidros elétricos", "Central multimídia", "Direção elétrica"],
+    location: "Paraná",
+    store: "Fiat Curitiba",
+    externalUrl: "https://google.com"
   },
   {
     id: "6",
@@ -147,7 +165,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Econômico e confiável.",
     image: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800&auto=format&fit=crop",
-    features: ["Ar-condicionado", "Sensor de ré", "Bluelink", "Controle de estabilidade"]
+    features: ["Ar-condicionado", "Sensor de ré", "Bluelink", "Controle de estabilidade"],
+    location: "Bahia",
+    store: "Hyundai Salvador",
+    externalUrl: "https://google.com"
   },
   {
     id: "7",
@@ -163,7 +184,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Hatch líder de vendas, como novo.",
     image: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&auto=format&fit=crop",
-    features: ["MyLink", "Controle de tração", "Freio ABS", "6 Airbags"]
+    features: ["MyLink", "Controle de tração", "Freio ABS", "6 Airbags"],
+    location: "São Paulo",
+    store: "Chevrolet Center",
+    externalUrl: "https://google.com"
   },
   {
     id: "8",
@@ -179,7 +203,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Sedan esportivo, seminovo com garantia.",
     image: "https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800&auto=format&fit=crop",
-    features: ["Honda Sensing", "Câmera 360°", "Teto solar", "Bancos em couro"]
+    features: ["Honda Sensing", "Câmera 360°", "Teto solar", "Bancos em couro"],
+    location: "Rio de Janeiro",
+    store: "Honda Automoveis",
+    externalUrl: "https://google.com"
   },
   {
     id: "9",
@@ -195,7 +222,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV compacto, porta-malas amplo.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["Ar digital", "Vidros elétricos", "Bancos em couro", "Sensor de luz"]
+    features: ["Ar digital", "Vidros elétricos", "Bancos em couro", "Sensor de luz"],
+    location: "Santa Catarina",
+    store: "VW Florianópolis",
+    externalUrl: "https://google.com"
   },
   {
     id: "10",
@@ -211,7 +241,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV versátil, revisões em dia.",
     image: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800&auto=format&fit=crop",
-    features: ["Central multimídia", "Bancos em couro", "Sensores", "Câmera de ré"]
+    features: ["Central multimídia", "Bancos em couro", "Sensores", "Câmera de ré"],
+    location: "Goiás",
+    store: "Hyundai Goiânia",
+    externalUrl: "https://google.com"
   },
   {
     id: "11",
@@ -227,7 +260,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV urbano estiloso.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["Sistema multimídia", "Ar-condicionado digital", "Sensor de luz", "Freios ABS"]
+    features: ["Sistema multimídia", "Ar-condicionado digital", "Sensor de luz", "Freios ABS"],
+    location: "Pernambuco",
+    store: "Nissan Recife",
+    externalUrl: "https://google.com"
   },
   {
     id: "12",
@@ -243,7 +279,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Sedan espaçoso, baixa quilometragem.",
     image: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&auto=format&fit=crop",
-    features: ["Central multimídia", "Ar digital", "Bancos ajustáveis", "Direção elétrica"]
+    features: ["Central multimídia", "Ar digital", "Bancos ajustáveis", "Direção elétrica"],
+    location: "Ceará",
+    store: "Nissan Fortaleza",
+    externalUrl: "https://google.com"
   },
   {
     id: "13",
@@ -259,7 +298,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Econômico ideal para cidade.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["Ar-condicionado", "Central multimídia", "Vidros elétricos", "Computador de bordo"]
+    features: ["Ar-condicionado", "Central multimídia", "Vidros elétricos", "Computador de bordo"],
+    location: "Distrito Federal",
+    store: "Renault Brasília",
+    externalUrl: "https://google.com"
   },
   {
     id: "14",
@@ -275,7 +317,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV robusto para aventuras.",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&auto=format&fit=crop",
-    features: ["4x4", "Ar-condicionado", "Central multimídia", "Porta-malas amplo"]
+    features: ["4x4", "Ar-condicionado", "Central multimídia", "Porta-malas amplo"],
+    location: "Espírito Santo",
+    store: "Renault Vitória",
+    externalUrl: "https://google.com"
   },
   {
     id: "15",
@@ -291,7 +336,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Picape forte e confiável.",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&auto=format&fit=crop",
-    features: ["4x4", "Caçamba", "Central multimídia", "Bancos de couro"]
+    features: ["4x4", "Caçamba", "Central multimídia", "Bancos de couro"],
+    location: "Mato Grosso",
+    store: "Ford Cuiabá",
+    externalUrl: "https://google.com"
   },
   {
     id: "16",
@@ -307,7 +355,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Lendária resistência e potência.",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&auto=format&fit=crop",
-    features: ["4x4", "Tração reduzida", "Sistema multimídia", "Câmera de ré"]
+    features: ["4x4", "Tração reduzida", "Sistema multimídia", "Câmera de ré"],
+    location: "Amazonas",
+    store: "Toyota Manaus",
+    externalUrl: "https://google.com"
   },
   {
     id: "17",
@@ -323,7 +374,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV tecnológico e moderno.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["MyLink", "OnStar", "Teto solar", "Bancos de couro"]
+    features: ["MyLink", "OnStar", "Teto solar", "Bancos de couro"],
+    location: "Paraíba",
+    store: "Chevrolet João Pessoa",
+    externalUrl: "https://google.com"
   },
   {
     id: "18",
@@ -339,7 +393,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Hatch premium francês.",
     image: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&auto=format&fit=crop",
-    features: ["I-Cockpit", "Ar digital", "Vidros elétricos", "Rodas de liga"]
+    features: ["I-Cockpit", "Ar digital", "Vidros elétricos", "Rodas de liga"],
+    location: "Maranhão",
+    store: "Peugeot São Luís",
+    externalUrl: "https://google.com"
   },
   {
     id: "19",
@@ -355,7 +412,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV compacto elegante.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["I-Cockpit", "Grip Control", "Sensores", "Central multimídia"]
+    features: ["I-Cockpit", "Grip Control", "Sensores", "Central multimídia"],
+    location: "Rio Grande do Norte",
+    store: "Peugeot Natal",
+    externalUrl: "https://google.com"
   },
   {
     id: "20",
@@ -371,7 +431,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Elétrico moderno, baixo custo de uso.",
     image: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&auto=format&fit=crop",
-    features: ["100% elétrico", "Autonomia 400km", "Carregamento rápido", "Tela central"]
+    features: ["100% elétrico", "Autonomia 400km", "Carregamento rápido", "Tela central"],
+    location: "São Paulo",
+    store: "BYD São Paulo",
+    externalUrl: "https://google.com"
   },
   {
     id: "21",
@@ -387,7 +450,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "Picape média versátil.",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&auto=format&fit=crop",
-    features: ["4x4", "Central multimídia", "Bancos de couro", "Ar digital"]
+    features: ["4x4", "Central multimídia", "Bancos de couro", "Ar digital"],
+    location: "Sergipe",
+    store: "Fiat Aracaju",
+    externalUrl: "https://google.com"
   },
   {
     id: "22",
@@ -403,7 +469,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV compacto com banco mágico.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["Banco mágico", "Central multimídia", "Câmera de ré", "Sensor de chuva"]
+    features: ["Banco mágico", "Central multimídia", "Câmera de ré", "Sensor de chuva"],
+    location: "Alagoas",
+    store: "Honda Maceió",
+    externalUrl: "https://google.com"
   },
   {
     id: "23",
@@ -419,7 +488,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV cupê estiloso.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["VW Play", "Ar digital", "Comandos no volante", "Faróis LED"]
+    features: ["VW Play", "Ar digital", "Comandos no volante", "Faróis LED"],
+    location: "Piauí",
+    store: "VW Teresina",
+    externalUrl: "https://google.com"
   },
   {
     id: "24",
@@ -435,7 +507,10 @@ export const vehicles: Vehicle[] = [
     featured: false,
     description: "SUV com ótimo custo-benefício.",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop",
-    features: ["Central multimídia", "Ar-condicionado", "Rodas de liga", "Vidros elétricos"]
+    features: ["Central multimídia", "Ar-condicionado", "Rodas de liga", "Vidros elétricos"],
+    location: "Mato Grosso do Sul",
+    store: "Chery Campo Grande",
+    externalUrl: "https://google.com"
   }
 ];
 
