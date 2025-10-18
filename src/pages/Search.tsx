@@ -200,8 +200,10 @@ const Search = () => {
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
                             <Input
                               type="number"
+                              min="0"
+                              step="5000"
                               value={priceRange[0]}
-                              onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                              onChange={(e) => setPriceRange([Math.max(0, Number(e.target.value)), priceRange[1]])}
                               placeholder="0"
                               className="pl-10"
                             />
@@ -216,8 +218,10 @@ const Search = () => {
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
                             <Input
                               type="number"
+                              min="0"
+                              step="5000"
                               value={priceRange[1]}
-                              onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                              onChange={(e) => setPriceRange([priceRange[0], Math.max(0, Number(e.target.value))])}
                               placeholder="500.000"
                               className="pl-10"
                             />
@@ -233,8 +237,10 @@ const Search = () => {
                           <Label className="text-xs text-muted-foreground mb-1 block">De</Label>
                           <Input
                             type="number"
+                            min="1940"
+                            max="2026"
                             value={yearRange[0]}
-                            onChange={(e) => setYearRange([Number(e.target.value), yearRange[1]])}
+                            onChange={(e) => setYearRange([Math.max(1940, Math.min(2026, Number(e.target.value))), yearRange[1]])}
                             placeholder="1940"
                           />
                         </div>
@@ -245,8 +251,10 @@ const Search = () => {
                           <Label className="text-xs text-muted-foreground mb-1 block">Até</Label>
                           <Input
                             type="number"
+                            min="1940"
+                            max="2026"
                             value={yearRange[1]}
-                            onChange={(e) => setYearRange([yearRange[0], Number(e.target.value)])}
+                            onChange={(e) => setYearRange([yearRange[0], Math.max(1940, Math.min(2026, Number(e.target.value)))])}
                             placeholder="2026"
                           />
                         </div>
@@ -261,8 +269,10 @@ const Search = () => {
                           <div className="relative">
                             <Input
                               type="number"
+                              min="0"
+                              step="5000"
                               value={kmRange[0]}
-                              onChange={(e) => setKmRange([Number(e.target.value), kmRange[1]])}
+                              onChange={(e) => setKmRange([Math.max(0, Number(e.target.value)), kmRange[1]])}
                               placeholder="0"
                               className="pr-10"
                             />
@@ -277,8 +287,10 @@ const Search = () => {
                           <div className="relative">
                             <Input
                               type="number"
+                              min="0"
+                              step="5000"
                               value={kmRange[1]}
-                              onChange={(e) => setKmRange([kmRange[0], Number(e.target.value)])}
+                              onChange={(e) => setKmRange([kmRange[0], Math.max(0, Number(e.target.value))])}
                               placeholder="200.000"
                               className="pr-10"
                             />
