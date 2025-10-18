@@ -34,7 +34,7 @@ export const VehicleCard = ({ vehicle }: VehicleCardProps) => {
           {vehicle.brand} {vehicle.model} {vehicle.year}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {vehicle.mileage.toLocaleString("pt-BR")} km · {vehicle.color}
+          {vehicle.mileage > 0 ? `${vehicle.mileage.toLocaleString("pt-BR")} km` : 'Km não informado'}
         </p>
         <p className="text-2xl font-bold text-primary">
           R$ {vehicle.price.toLocaleString("pt-BR")}
