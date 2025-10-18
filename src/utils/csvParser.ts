@@ -3,6 +3,7 @@ import { Vehicle } from "@/data/vehicles";
 export function parseCSVToVehicles(csvContent: string): Vehicle[] {
   const lines = csvContent.split('\n').filter(line => line.trim());
   const vehicles: Vehicle[] = [];
+  const seen = new Set<string>(); // Para detectar duplicatas
   
   // Skip header
   for (let i = 1; i < lines.length; i++) {
@@ -30,6 +31,13 @@ export function parseCSVToVehicles(csvContent: string): Vehicle[] {
     if (values.length < 8) continue;
     
     const [ano, cidade, foto_url, km, link, loja, preco, titulo] = values;
+    
+    // Clean link (remove duplicate domain)
+    const cleanLink = link.replace('https://www.comprecar.com.brhttps://', 'https://');
+    
+    // Skip duplicates based on link
+    if (seen.has(cleanLink)) continue;
+    seen.add(cleanLink);
     
     // Parse year
     const year = parseInt(ano);
@@ -99,11 +107,8 @@ export function parseCSVToVehicles(csvContent: string): Vehicle[] {
     else if (titleLower.includes('gasolina') && !titleLower.includes('flex')) fuel = 'Gasolina';
     else if (titleLower.includes('elétrico') || titleLower.includes('eletrico')) fuel = 'Elétrico';
     
-    // Fix link (remove duplicate domain)
-    const cleanLink = link.replace('https://www.comprecar.com.brhttps://', 'https://');
-    
     vehicles.push({
-      id: `${i}`,
+      id: cleanLink, // Use link as unique ID
       brand,
       model,
       year,
@@ -113,7 +118,7 @@ export function parseCSVToVehicles(csvContent: string): Vehicle[] {
       transmission,
       fuel,
       category,
-      featured: i <= 10, // First 10 as featured
+      featured: vehicles.length < 10, // First 10 as featured
       description: titulo.substring(0, 100),
       image: foto_url,
       location: cidade,

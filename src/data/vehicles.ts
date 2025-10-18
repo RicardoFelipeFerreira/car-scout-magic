@@ -60,12 +60,19 @@ const brandLogos: { [key: string]: string } = {
   "NISSAN": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/200px-Nissan_logo.svg.png",
 };
 
-// Carregar marcas do JSON e adicionar logos
-export const brands: Brand[] = brandsData.map(brand => ({
-  name: brand.name,
-  models: brand.models,
-  logo: brandLogos[brand.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=random`
-}));
+// Carregar marcas do JSON e adicionar logos, removendo duplicatas
+const uniqueBrands = new Map<string, Brand>();
+brandsData.forEach(brand => {
+  if (!uniqueBrands.has(brand.name)) {
+    uniqueBrands.set(brand.name, {
+      name: brand.name,
+      models: brand.models,
+      logo: brandLogos[brand.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=random`
+    });
+  }
+});
+
+export const brands: Brand[] = Array.from(uniqueBrands.values());
 
 // Carregar veículos do CSV
 export const vehicles: Vehicle[] = parseCSVToVehicles(csvContent);
