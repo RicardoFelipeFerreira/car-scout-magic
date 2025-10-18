@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SlidersHorizontal, ChevronDown } from "lucide-react";
 
@@ -193,35 +192,34 @@ const Search = () => {
                     </div>
 
                     <div>
-                      <Label>Preço</Label>
-                      <div className="space-y-3 mt-2">
-                        <Slider
-                          min={0}
-                          max={500000}
-                          step={5000}
-                          value={priceRange}
-                          onValueChange={(value) => setPriceRange(value as [number, number])}
-                          className="w-full"
-                        />
-                        <div className="flex gap-2">
-                          <div className="flex-1">
-                            <Label className="text-xs">Min</Label>
+                      <Label className="text-sm font-semibold mb-3 block">Preço</Label>
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Mínimo</Label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
                             <Input
                               type="number"
                               value={priceRange[0]}
                               onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                              placeholder="Mínimo"
-                              className="h-8"
+                              placeholder="0"
+                              className="pl-10"
                             />
                           </div>
-                          <div className="flex-1">
-                            <Label className="text-xs">Max</Label>
+                        </div>
+                        <div className="flex items-end pb-2">
+                          <span className="text-muted-foreground">—</span>
+                        </div>
+                        <div className="flex-1">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Máximo</Label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
                             <Input
                               type="number"
                               value={priceRange[1]}
                               onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                              placeholder="Máximo"
-                              className="h-8"
+                              placeholder="500.000"
+                              className="pl-10"
                             />
                           </div>
                         </div>
@@ -229,72 +227,62 @@ const Search = () => {
                     </div>
 
                     <div>
-                      <Label>Ano</Label>
-                      <div className="space-y-3 mt-2">
-                        <Slider
-                          min={1940}
-                          max={2026}
-                          step={1}
-                          value={yearRange}
-                          onValueChange={(value) => setYearRange(value as [number, number])}
-                          className="w-full"
-                        />
-                        <div className="flex gap-2">
-                          <div className="flex-1">
-                            <Label className="text-xs">Min</Label>
-                            <Input
-                              type="number"
-                              value={yearRange[0]}
-                              onChange={(e) => setYearRange([Number(e.target.value), yearRange[1]])}
-                              placeholder="Mínimo"
-                              className="h-8"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Label className="text-xs">Max</Label>
-                            <Input
-                              type="number"
-                              value={yearRange[1]}
-                              onChange={(e) => setYearRange([yearRange[0], Number(e.target.value)])}
-                              placeholder="Máximo"
-                              className="h-8"
-                            />
-                          </div>
+                      <Label className="text-sm font-semibold mb-3 block">Ano</Label>
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Label className="text-xs text-muted-foreground mb-1 block">De</Label>
+                          <Input
+                            type="number"
+                            value={yearRange[0]}
+                            onChange={(e) => setYearRange([Number(e.target.value), yearRange[1]])}
+                            placeholder="1940"
+                          />
+                        </div>
+                        <div className="flex items-end pb-2">
+                          <span className="text-muted-foreground">—</span>
+                        </div>
+                        <div className="flex-1">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Até</Label>
+                          <Input
+                            type="number"
+                            value={yearRange[1]}
+                            onChange={(e) => setYearRange([yearRange[0], Number(e.target.value)])}
+                            placeholder="2026"
+                          />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <Label>KM</Label>
-                      <div className="space-y-3 mt-2">
-                        <Slider
-                          min={0}
-                          max={200000}
-                          step={5000}
-                          value={kmRange}
-                          onValueChange={(value) => setKmRange(value as [number, number])}
-                          className="w-full"
-                        />
-                        <div className="flex gap-2">
-                          <div className="flex-1">
-                            <Label className="text-xs">Min</Label>
+                      <Label className="text-sm font-semibold mb-3 block">Quilometragem</Label>
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Mínimo</Label>
+                          <div className="relative">
                             <Input
                               type="number"
                               value={kmRange[0]}
                               onChange={(e) => setKmRange([Number(e.target.value), kmRange[1]])}
-                              placeholder="0 km"
-                              className="h-8"
+                              placeholder="0"
+                              className="pr-10"
                             />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">km</span>
                           </div>
-                          <div className="flex-1">
-                            <Label className="text-xs">Max</Label>
+                        </div>
+                        <div className="flex items-end pb-2">
+                          <span className="text-muted-foreground">—</span>
+                        </div>
+                        <div className="flex-1">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Máximo</Label>
+                          <div className="relative">
                             <Input
                               type="number"
                               value={kmRange[1]}
                               onChange={(e) => setKmRange([kmRange[0], Number(e.target.value)])}
-                              placeholder="200.000 km"
-                              className="h-8"
+                              placeholder="200.000"
+                              className="pr-10"
                             />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">km</span>
                           </div>
                         </div>
                       </div>
