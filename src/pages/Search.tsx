@@ -9,12 +9,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SlidersHorizontal, ChevronDown } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 24;
 
 const Search = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
   const [sortBy, setSortBy] = useState("relevance");
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Extract brand and model from query
   const { brand: detectedBrand, model: detectedModel } = useMemo(() => 
@@ -113,6 +125,19 @@ const Search = () => {
     }
     return sorted;
   }, [filteredVehicles, sortBy]);
+
+  // Pagination
+  const totalPages = Math.ceil(sortedVehicles.length / ITEMS_PER_PAGE);
+  const paginatedVehicles = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return sortedVehicles.slice(startIndex, endIndex);
+  }, [sortedVehicles, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredVehicles.length, sortBy]);
 
   const handleApplyFilters = () => {
     setShowFilters(false);
@@ -458,7 +483,7 @@ const Search = () => {
                 <div>
                   <h1 className="text-3xl font-bold mb-2">Resultados da Busca</h1>
                   <p className="text-muted-foreground">
-                    Exibindo 1-{sortedVehicles.length} de {sortedVehicles.length} resultados
+                    Exibindo {sortedVehicles.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, sortedVehicles.length)} de {sortedVehicles.length} resultados
                     {query && ` para "${query}"`}
                   </p>
                 </div>
@@ -488,7 +513,7 @@ const Search = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {sortedVehicles.map((vehicle) => (
+                {paginatedVehicles.map((vehicle) => (
                   <VehicleCard key={vehicle.id} vehicle={vehicle} />
                 ))}
               </div>
@@ -501,6 +526,78 @@ const Search = () => {
                   <p className="text-sm text-muted-foreground mt-2">
                     Tente buscar por outras marcas ou modelos.
                   </p>
+                </div>
+              )}
+
+              {sortedVehicles.length > 0 && totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (currentPage > 1) {
+                              setCurrentPage(currentPage - 1);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                          }}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      
+                      {[...Array(totalPages)].map((_, i) => {
+                        const pageNumber = i + 1;
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          pageNumber === 1 ||
+                          pageNumber === totalPages ||
+                          (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                        ) {
+                          return (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationLink
+                                href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setCurrentPage(pageNumber);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                isActive={currentPage === pageNumber}
+                              >
+                                {pageNumber}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        } else if (
+                          pageNumber === currentPage - 2 ||
+                          pageNumber === currentPage + 2
+                        ) {
+                          return (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
+                        return null;
+                      })}
+
+                      <PaginationItem>
+                        <PaginationNext 
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (currentPage < totalPages) {
+                              setCurrentPage(currentPage + 1);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                          }}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
               )}
             </div>
